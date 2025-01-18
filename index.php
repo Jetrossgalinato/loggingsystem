@@ -35,11 +35,16 @@
                     <label style="margin-top: 50px;">SCAN QR CODE</label>
                     <input type="text" name="text" id="text" readonly="" class="form-control">
                 </form>
+                <form method="GET" action="" class="form-inline" style="margin-bottom: 20px;">
+                    <input type="text" name="search" class="form-control" placeholder="Search Student ID" 
+                    value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+                    <button type="submit" class="btn btn-primary" style="margin-left: 10px;">Search</button>
+                </form>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <td>Student ID</td>
-                            <td>Time in</td>
+                            <td>Log Time</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,8 +59,15 @@
                             if ($conn->connect_error) {
                                 die("Connection failed: " . $conn->connect_error);
                             } 
-                                $sql = "SELECT student_id,time_in FROM table_attendance";
+                                $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                                $sql = "SELECT student_id, time_in FROM table_attendance";
+                                
+                                if (!empty($search)) {
+                                    $sql .= " WHERE student_id LIKE '%$search%'";
+                                }
+                                
                                 $query = $conn->query($sql);
+                                
                                 while($row = $query->fetch_assoc()){     
                         ?>
                                 <tr>
